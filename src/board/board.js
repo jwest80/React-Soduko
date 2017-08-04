@@ -15,13 +15,15 @@ class Board extends Component {
 
     componentDidMount() {
         this.suduko.generate();
-        this.suduko.getCurrent();
+        let grid = this.suduko.getCurrent();
         this.setState({squares: this.suduko.getCurrent()});
         
         // TODO: Fix this to be promise or event
         let comp = this;
         setTimeout(function(){ 
-            comp.suduko.solve();
+            console.time("Solve");
+            comp.suduko.solve(grid);
+            console.timeEnd("Solve");
             comp.setState({squares: comp.suduko.getCurrent()});
         }, 1000);
     }
