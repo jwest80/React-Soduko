@@ -3,25 +3,70 @@ import './sets.js';
 class suduko {
 
     constructor() {
-        this.problem = new Array(81);
-        this.current = new Array(81);
-        this.solutions = [];
-        this.numberOfSolutions = 0;
-        this.requiresBrutForce = false;
+        this.problem = new Array(81);       // Starting problem
+        this.current = new Array(81);       // Current state of grid
+        this.solutions = [];                // All possible solutions 
+        this.numberOfSolutions = 0;         // Number of solutions
+        this.requiresBrutForce = false;     // Does the solution require BruteForce solve
         this.possibleValues = new Set([1,2,3,4,5,6,7,8,9]);
     };
 
-    generate() {
+    // Generate a new grid (maxRemove) is the max number of blank squares.  
+    // Generated grid may have less blank squares
+    generate(maxRemove) {
+        console.time("Generate");
+        maxRemove = maxRemove || 71;
+
+        // Seed Grid with some values, Any number of values is fine because 
+        // these numbers will not nescessarily show in the final problem. 
+        // (We will remove numbers from a complete solution)
         this.problem = new Array(81).fill(null);
-        //this.problem = [7,null,null,3,null,2,null,null,null,null,null,null,1,7,null,4,3,2,null,2,null,null,6,null,null,5,null,null,null,null,7,5,6,null,null,null,null,null,5,4,null,1,null,2,null,4,1,null,9,2,null,null,6,null,5,null,null,null,4,null,null,1,3,null,4,7,6,1,3,null,9,null,null,null,null,null,8,null,null,null,null];
+        this.problem = this.seedPuzzle();  // 
+
+        // Sove Grid and update problem to solution[0]
+        this.solve(this.problem);
+        this.problem = this.solutions[0].slice();
+
+        // Remove numbers from solved grid to create problem
+        this.problem = this.createProblem(this.problem, maxRemove);
+        this.printGrid(this.problem);
+
+        // Update current to problem
         this.current = this.problem.slice();
+        console.timeEnd("Generate");
     };
 
+    // Get current state of grid.
     getCurrent() {
         return this.current;
     }
 
-    // Solve Soduko Grid
+    // Using a solved grid it will remove squares (at random) to make grid solveable,
+    // but will also ensure there is only 1 solution to the problem.
+    createProblem(grid, maxRemove) {
+        console.log('Creating Problem');
+        // let keepGoing = true;
+        let indexArray = this.createShuffledIndexArray(81);
+
+        for (let x = 0; x < 81; x++) {
+            let index = indexArray[x];
+            let temp = grid[index];
+            grid[index] = null;
+            maxRemove--;
+
+            this.resetSolutions();
+            this.solve(grid.slice());
+
+            if (this.numberOfSolutions > 1 ||
+                this.requiresBrutForce || 
+                maxRemove < 0) {
+                grid[index] = temp;
+            }
+        }
+        return grid;
+    }
+
+    // Solve Soduko Grid (it can solve anything, stores all solutions in "this.solutions = []")
     solve(grid) {
         let updated = false;
         for (let r = 0; r < 9; r++) {
@@ -45,8 +90,6 @@ class suduko {
                 this.solutions.push(grid);
             }
             this.numberOfSolutions = this.solutions.length;
-            this.current = this.solutions[0];
-            console.log(this.solutions);
             return true
         }
     };
@@ -163,6 +206,72 @@ class suduko {
             return this.possibleValues.difference(union);
     }
 
+    // Seeds some values for the initial solve randomly (don't want to solve a blank grid)
+    seedPuzzle() {
+        let randomPuzzle = new Array(81).fill(null);
+        let seedValues = this.createShuffledIndexArray(9);
+
+        let x = 0;
+        while (x < 7) {
+            let index = this.getRandom(0,80);
+            if (randomPuzzle[index] === null) {
+                let r = Math.floor(index / 9);
+                let c = index % 9;
+
+                randomPuzzle[index] = seedValues[x] + 1;
+                x++;
+            }
+        }
+
+        // let x = 0;
+        // while (x < count) {
+        //     let index = this.getRandom(0,80);
+        //     if (randomPuzzle[index] === null) {
+        //         let r = Math.floor(index / 9);
+        //         let c = index % 9;
+
+        //         let vals = this.getPossibleValues(randomPuzzle,r,c);
+        //         let valIndex = this.getRandom(0,vals.size);
+        //         let value = vals.getByIndex(valIndex);
+
+        //         randomPuzzle[index] = value;
+        //         x++;
+        //     }
+        // }
+        return randomPuzzle;
+    }
+
+    // Create Shuffled Index Array 
+    createShuffledIndexArray(n) {
+        let arr = new Array(n);
+        for (let x = 0; x < n; x++) {
+            arr[x] = x;
+        }
+
+        let currentIndex = arr.length, temporaryValue, randomIndex;
+
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = arr[currentIndex];
+            arr[currentIndex] = arr[randomIndex];
+            arr[randomIndex] = temporaryValue;
+        }
+
+        return arr;
+    }
+
+    // Reset the solutions to puzzle
+    resetSolutions() {
+        this.solutions = [];                 
+        this.numberOfSolutions = 0;         
+        this.requiresBrutForce = false;     
+    }
 
     // Helper Functions
     getIndex(r, c) {
@@ -213,6 +322,9 @@ class suduko {
             gridString += "\n";
         }
         console.log(gridString);
+    }
+    getRandom(min, max) {
+        return Math.floor(Math.random() * (max - min) + min);
     }
 }
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './board.css';
 import Square from './square';
+import Generate from './generate';
 import suduko from '../utility/suduko';
 
 class Board extends Component {
@@ -14,24 +15,27 @@ class Board extends Component {
     }
 
     componentDidMount() {
-        this.suduko.generate();
-        let grid = this.suduko.getCurrent();
-        this.setState({squares: this.suduko.getCurrent()});
-        
-        // TODO: Fix this to be promise or event
-        let comp = this;
-        setTimeout(function(){ 
-            console.time("Solve");
-            comp.suduko.solve(grid);
-            console.timeEnd("Solve");
-            comp.setState({squares: comp.suduko.getCurrent()});
-        }, 1000);
+        //this.newGrid();
+        //this.solveGrid();
     }
 
     componentWillUnmount() {
         // UnMount
     }
 
+    newGrid(maxRemove) {
+        this.suduko.generate(maxRemove);
+        let grid =  this.suduko.getCurrent();
+        this.setState({squares: this.suduko.getCurrent()});    
+    }
+
+    solveGrid() {
+        console.time("Solve");
+        let grid =  this.suduko.getCurrent();
+        this.suduko.solve(grid);
+        this.setState({squares: this.suduko.getCurrent()});    
+        console.timeEnd("Solve");
+    }
 
     // Helper
     getIndex(rows, cols) {
@@ -81,7 +85,12 @@ class Board extends Component {
             rows.push(<tr key={r}>{this.renderRow(r)}</tr>);
         }    
 
-        return (<div><table><tbody>{rows}</tbody></table><span></span>{JSON.stringify(this.state.squares)}</div>);
+        return (
+            <div>
+                <Generate onClick={(e,maxRemove) => this.newGrid(maxRemove)}></Generate>
+                <table><tbody>{rows}</tbody></table>
+            </div>
+        );
     }
 }
 
