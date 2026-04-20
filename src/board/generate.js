@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './generate.css';
+import './generate.scss';
 
 class Generate extends Component {
     constructor() {
@@ -15,13 +15,13 @@ class Generate extends Component {
     render() {
         return (
             <div className='generate'>
-                <button onClick={(e) => this.props.onClick(e, 64)}>  
+                <button onClick={(e) => this.props.onClick(e, 55)}>  
                     Hard
                 </button>  
-                <button onClick={(e) => this.props.onClick(e, 59)}>
+                <button onClick={(e) => this.props.onClick(e, 45)}>
                     Normal
                 </button>  
-                <button onClick={(e) => this.props.onClick(e, 55)}>
+                <button onClick={(e) => this.props.onClick(e, 35)}>
                     Easy
                 </button>            
             </div>

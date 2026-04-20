@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './board.css';
+import './board.scss';
 import Square from './square';
 import Generate from './generate';
 import suduko from '../utility/suduko';
