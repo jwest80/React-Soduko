@@ -8,7 +8,7 @@ class Square extends Component {
     }
     render() {
         return (
-            <td className="square" onMouseDown={(e) => this.props.onClick(e,this.props.row,this.props.col )} onContextMenu={(e) => e.preventDefault()} >
+            <td className={`square${this.props.invalid ? ' invalid' : ''}`} onMouseDown={(e) => this.props.onClick(e,this.props.row,this.props.col )} onContextMenu={(e) => e.preventDefault()} >
                 {this.props.value}
             </td>
         );

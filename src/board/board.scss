@@ -10,6 +10,10 @@ td {
   border:1px solid;
   text-align:center;
 }
+td.invalid {
+  background-color: #ffe6e6;
+  border-color: #d00000;
+}
 td:first-child {
   border-left:solid;
 }
@@ -21,4 +25,17 @@ tr:first-child {
 }
 tr:nth-child(3n) td {
   border-bottom:solid ;
+}
+
+.check-solve {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.check-solve button {
+  min-width: 80px;
+  padding: 6px 10px;
+  cursor: pointer;
 }
